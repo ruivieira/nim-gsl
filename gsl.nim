@@ -15,6 +15,6 @@ proc gsl_ran_gaussian(r : ptr Gsl_rng, sigma : float) : float {.header: "<gsl/gs
 
 let rng = gsl_rng_alloc(gsl_rng_env_setup())
 
-for i in 0..100:
-  let x = gsl_ran_gaussian(rng, 1.0)
-  echo $x
+# for i in 0..100:
+#   let x = gsl_ran_gaussian(rng, 1.0)
+#   echo $x
