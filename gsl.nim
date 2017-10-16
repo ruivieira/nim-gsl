@@ -17,6 +17,9 @@ proc gsl_ran_gaussian(r : ptr Gsl_rng, sigma : float) : float {.header: "<gsl/gs
 
 proc gsl_ran_gamma(r : ptr Gsl_rng, a : float, b : float): float {.header: "<gsl/gsl_randist.h>", importc: "gsl_ran_gamma", varargs.}
 
+# Poisson bindings
+proc gsl_ran_poisson (r: ptr Gsl_rng, mu : float): int {.header: "<gsl/gsl_randist.h>", importc: "gsl_ran_poisson", varargs.}
+
 proc rnorm*(r : ptr Gsl_rng, mu: float, sigma: float) : float =
   mu + gsl_ran_gaussian(r, sigma)
 
@@ -34,6 +37,23 @@ proc rgamma*(r: ptr Gsl_rng, n : int, a: float, b: float) : seq[float] =
   for i in 0..<n:
     samples.add(gsl_ran_gamma(r, a, b))
   samples
+
+# Poisson distribution
+proc rpois*(r: ptr Gsl_rng, mu: float) : int =
+  gsl_ran_poisson(r, mu)
+
+proc rpois*(r: ptr Gsl_rng, n: int, mu: float): seq[int] =
+  var samples: seq[int] = @[]
+  for i in 0..<n:
+    samples.add(rpois(r, mu))
+  samples
+
+proc gsl_ran_multinomial(T: ptr Gsl_rng, K: int, N: int, p: seq[float], n: seq[uint]) {.header: "<gsl/gsl_randist.h>", importc: "gsl_ran_multinomial", varargs.}
+
+proc rmultinomial*(r: ptr Gsl_rng, probabilities: seq[float], n: int): seq[uint] =
+  var samples = newSeq[uint](n)
+  gsl_ran_multinomial(r, probabilities.len(), n, probabilities, samples)
+  result = samples
 
 proc gsl_stats_variance(data: seq[float], stride: int, n: int): float {.header: "<gsl/gsl_statistics.h>", importc: "gsl_stats_variance", varargs.}
 
